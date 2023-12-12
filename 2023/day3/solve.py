@@ -3,18 +3,10 @@ import re
 input = open(0).read().strip().splitlines()
 
 def get_possible_part_nums(row):
-    allmatches = []
-    rowmatches = re.finditer(r'([\d]+)', row)
-    for match in rowmatches:
-        allmatches.append((match.start(), match.end()))
-    return allmatches
+    return [(match.start(), match.end()) for match in re.finditer(r'([\d]+)', row)]
 
 def get_possible_gears(row):
-    allmatches = []
-    rowmatches = re.finditer(r'(\*)', row)
-    for match in rowmatches:
-        allmatches.append((match.start()))
-    return allmatches
+    return [match.start() for match in re.finditer(r'(\*)', row)]
 
 def isspecial(ch):
     return ch != '.' and ch != '\n' and not ch.isalpha()
@@ -28,13 +20,11 @@ def is_part_number(pn, row, input):
 
     for rn in [row - 1, row + 1]:
         for cn in range(cs - 1, ce + 1):
-            if rn >= 0 and rn < height and cn >= 0 and cn < width:
-                if isspecial(input[rn][cn]):
-                    return True
-    for cn in [cs - 1, ce]:
-        if cn >= 0 and cn < width:
-            if isspecial(input[row][cn]):
+            if rn >= 0 and rn < height and cn >= 0 and cn < width and isspecial(input[rn][cn]):
                 return True
+    for cn in [cs - 1, ce]:
+        if cn >= 0 and cn < width and isspecial(input[row][cn]):
+            return True
 
     return False
 
@@ -47,14 +37,12 @@ def adjacent(gr, g, pnr, pn):
 
 def part1():
     possible_part_nums = [get_possible_part_nums(row) for row in input]
-    sum = 0
-    for row, pns in enumerate(possible_part_nums):
-        for pn in pns:
-            if is_part_number(pn, row, input):
-                sum += int(input[row][pn[0]:pn[1]])
+
+    answer = sum([int(input[row][pn[0]:pn[1]]) for row, pns in enumerate(possible_part_nums) for pn in pns if is_part_number(pn, row, input)])
 
     # assert(sum == 539433)
-    return sum
+
+    return answer
 
 def part2():
     possible_part_nums = [get_possible_part_nums(row) for row in input]
@@ -74,6 +62,7 @@ def part2():
                 gear_ratio_sum += gear_ratio
 
     # assert(gear_ratio_sum == 75847567)
+
     return gear_ratio_sum
 
 

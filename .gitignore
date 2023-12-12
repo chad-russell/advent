@@ -1,2 +1,6 @@
 # Rust
 **/rust/target
+
+# Python
+python
+**/__pycache__

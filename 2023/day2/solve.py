@@ -12,22 +12,18 @@ def make_game(g):
     return [make_trial(gg) for gg in g.split(',')]
 
 def make_game_list(ind, row):
-    initial = row.split(':')[1].split(';')
-    games = [make_game(g) for g in initial]
+    games = [make_game(g) for g in row.split(':')[1].split(';')]
     return (ind, games)
 
 def is_valid(game):
     for trial in game[1]:
         for result in trial:
-            if result[1] == 'red':
-                if result[0] > MAX_RED:
-                    return False
-            elif result[1] == 'green':
-                if result[0] > MAX_GREEN:
-                    return False
-            elif result[1] == 'blue':
-                if result[0] > MAX_BLUE:
-                    return False
+            if result[1] == 'red' and result[0] > MAX_RED:
+                return False
+            elif result[1] == 'green' and result[0] > MAX_GREEN:
+                return False
+            elif result[1] == 'blue' and result[0] > MAX_BLUE:
+                return False
     return True
 
 def power(game):

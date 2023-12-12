@@ -6,7 +6,7 @@ def read_nums(nums):
 def card_num(row):
     card = row.split(':')[1].strip().split('|')
     winning, have = read_nums(card[0]), read_nums(card[1])
-    return len([h for h in have if h in winning])
+    return sum(h in winning for h in have)
 
 def card_score(row):
     cn = card_num(row)
