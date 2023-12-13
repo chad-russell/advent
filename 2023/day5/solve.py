@@ -1,35 +1,19 @@
-input = open(0).read().strip().splitlines()
+input = open(0).read().strip().split('\n\n')
 
-def read_map(input, line):
-    map = []
-    while line < len(input) and len(input[line]) and input[line][0].isdigit():
-        m = [int(s) for s in input[line].split(' ')]
-        map.append(m)
-        line += 1
-    return map, line + 2
+def read_entry(line):
+    return [int(s) for s in line.split(' ')]
 
-def read_maps():
+def read_map(input):
+    input = input.splitlines()
+    name = input[0].split(' ')[0]
+    map = [read_entry(line) for line in input[1:]]
+    return name, map
+
+def read_input():
     seeds = input[0].split(':')[1].strip().split(' ')
     seeds = [int(s) for s in seeds]
-    line = 3
-    seed_to_soil, line = read_map(input, line)
-    soil_to_fertilizer, line = read_map(input, line)
-    fertilizer_to_water, line = read_map(input, line)
-    water_to_light, line = read_map(input, line)
-    light_to_temperature, line = read_map(input, line)
-    temperature_to_humidity, line = read_map(input, line)
-    humidity_to_location, line = read_map(input, line)
-    r = {
-            'seeds': seeds,
-            'seed-to-soil': seed_to_soil,
-            'soil-to-fertilizer': soil_to_fertilizer,
-            'fertilizer-to-water': fertilizer_to_water,
-            'water-to-light': water_to_light,
-            'light-to-temperature': light_to_temperature,
-            'temperature-to-humidity': temperature_to_humidity,
-            'humidity-to-location': humidity_to_location
-            }
-    return r
+    maps = dict(read_map(m) for m in input[1:])
+    return seeds, maps
 
 def lookup(n, map):
     for m in map:
@@ -53,25 +37,23 @@ def chunk(l, n):
     for i in range(0, len(l), n):  
         yield l[i:i + n]
 
-maps = read_maps()
+seeds, maps = read_input()
 
 def part1():
     lowest = 2**64
-    for seed in maps['seeds']:
+    for seed in seeds:
         location = lookup_location(seed, maps)
         lowest = min(lowest, location)
     # assert(lowest == 340994526)
     return lowest
 
 def part2():
-    seeds = maps['seeds']
     seed_ranges = [(seeds[i], seeds[i] + seeds[i + 1]) for i in range(0, len(seeds), 2)]
     for m in list(maps.values())[1:]:
         new_seed_ranges = []
 
         while len(seed_ranges) > 0:
             s, e = seed_ranges.pop()
-            assert(s < e)
 
             found = False
             for a, b, c in m:

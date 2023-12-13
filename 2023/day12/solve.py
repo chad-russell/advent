@@ -1,10 +1,10 @@
 input = open(0).read().splitlines()
 
 def maybe_operational(n):
-    return n in ['.', '?']
+    return n in '.?'
 
 def maybe_damaged(n):
-    return n in ['#', '?']
+    return n in '#?'
 
 memo = {}
 def count_ways(given, targets):
