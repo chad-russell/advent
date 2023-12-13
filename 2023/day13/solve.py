@@ -1,20 +1,22 @@
 input = open(0).read().split('\n\n')
-patterns = list(map(lambda x: x.splitlines(), input))
+
+patterns = [x.splitlines() for x in input]
 
 def rotate(p):
     return list(zip(*p[::-1]))
 
 def find_mirror(p, target_delta):
     for row in range(1, len(p)):
-        delta = 0
-        lower = row - 1
-        upper = row
-        while lower >= 0 and upper < len(p):
-            delta += sum(a != b for a, b in zip(p[lower], p[upper]))
-            lower -= 1
-            upper += 1
+        above = p[:row][::-1]
+        below = p[row:]
+
+        # zip rows in above and below, and futher zip the characters in each row
+        zipped = [zip(a, b) for a, b in zip(above, below)]
+
+        delta = sum(a != b for z in zipped for a, b in z)
         if delta == target_delta:
             return row
+
     return 0
 
 def helper(target_delta):
