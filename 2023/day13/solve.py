@@ -2,7 +2,7 @@ input = open(0).read().split('\n\n')
 patterns = list(map(lambda x: x.splitlines(), input))
 
 def rotate(p):
-    return [[r[c] for r in p[::-1]] for c in range(len(p[0]))]
+    return list(zip(*p[::-1]))
 
 def find_mirror(p, target_delta):
     for row in range(1, len(p)):
