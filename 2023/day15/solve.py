@@ -23,7 +23,7 @@ def part2():
         else:
             boxes[boxnr].pop(label, None)
             
-    answer = sum((boxnr + 1) * (slotnr + 1) * box[slot] for boxnr, box in enumerate(boxes) for slotnr, slot in enumerate(box))
+    answer = sum(boxnr * slotnr * box[slot] for boxnr, box in enumerate(boxes, 1) for slotnr, slot in enumerate(box, 1))
     # assert(answer == 243747)
     return answer
 
