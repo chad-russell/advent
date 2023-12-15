@@ -30,8 +30,8 @@ def roll_all_north():
 def rotate():
     global input
     input = [''.join(row) for row in input]
-    input = list(zip(*input[::-1]))
-    input = [list(row) for row in input]
+    flipped = zip(*input[::-1])
+    input = [list(row) for row in flipped]
 
 def spin_cycle():
     for _ in range(4):
@@ -44,7 +44,9 @@ def part1():
             roll_north(ri, ci)
 
     answer = calculate_load()
+
     # assert(load == 113486)
+
     return answer
 
 def part2():
