@@ -20,8 +20,8 @@ def part2():
         boxnr = hash(label)
         if '=' in item:
             boxes[boxnr][label] = int(rest)
-        elif label in boxes[boxnr]:
-            del boxes[boxnr][label]
+        else:
+            boxes[boxnr].pop(label, None)
             
     answer = sum((boxnr + 1) * (slotnr + 1) * box[slot] for boxnr, box in enumerate(boxes) for slotnr, slot in enumerate(box))
     # assert(answer == 243747)
