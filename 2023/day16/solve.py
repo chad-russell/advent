@@ -1,9 +1,28 @@
+from collections import deque
+
 input = open(0).read().splitlines()
 
 class Beam:
     def __init__(self, position, velocity):
         self.position = position
         self.velocity = velocity
+
+    @classmethod
+    def copy_from(cls, other):
+        position = [other.position[0], other.position[1]]
+        velocity = [other.velocity[0], other.velocity[1]]
+        return cls(position, velocity)
+    
+    def out_of_bounds(self):
+        if self.position[0] < 0 or self.position[0] >= len(input):
+            return True
+        if self.position[1] < 0 or self.position[1] >= len(input[0]):
+            return True
+        return False
+    
+    def update_position(self):
+        self.position[0] += self.velocity[0]
+        self.position[1] += self.velocity[1]
 
 RIGHT = [0, 1]
 LEFT = [0, -1]
@@ -12,23 +31,14 @@ UP = [-1, 0]
 
 def energized_tiles(initial_position, initial_velocity):
     history = set()
-    beams = [Beam(position=initial_position, velocity=initial_velocity)]
-    new_beams = []
-
-    def out_of_bounds(beam):
-        if beam.position[0] < 0 or beam.position[0] >= len(input):
-            return True
-        if beam.position[1] < 0 or beam.position[1] >= len(input[0]):
-            return True
-        return False
+    beams = deque([Beam(position=initial_position, velocity=initial_velocity)])
 
     def push_new_beam(beam):
-        beam.position[0] += beam.velocity[0]
-        beam.position[1] += beam.velocity[1]
-        new_beams.append(beam)
+        beam.update_position()
+        beams.append(beam)
 
     def process_beam(beam):
-        if out_of_bounds(beam):
+        if beam.out_of_bounds():
             return
 
         # Avoid cycles
@@ -40,64 +50,44 @@ def energized_tiles(initial_position, initial_velocity):
         cur = input[beam.position[0]][beam.position[1]]
 
         if cur == '/':
-            if beam.velocity == RIGHT:
-                beam.velocity = UP
-            elif beam.velocity == LEFT:
-                beam.velocity = DOWN
-            elif beam.velocity == UP:
-                beam.velocity = RIGHT
-            elif beam.velocity == DOWN:
-                beam.velocity = LEFT
+            beam.velocity = [-beam.velocity[1], -beam.velocity[0]]
             push_new_beam(beam)
 
         elif cur == '\\':
-            if beam.velocity == RIGHT:
-                beam.velocity = DOWN
-            elif beam.velocity == LEFT:
-                beam.velocity = UP
-            elif beam.velocity == UP:
-                beam.velocity = LEFT
-            elif beam.velocity == DOWN:
-                beam.velocity = RIGHT
+            beam.velocity = [beam.velocity[1], beam.velocity[0]]
             push_new_beam(beam)
 
         elif cur == '-':
             if beam.velocity == RIGHT or beam.velocity == LEFT:
                 push_new_beam(beam)
             else:
-                s1 = Beam(position=[beam.position[0], beam.position[1]], velocity=[beam.velocity[0], beam.velocity[1]])
-                s2 = Beam(position=[beam.position[0], beam.position[1]], velocity=[beam.velocity[0], beam.velocity[1]])
-
+                s1 = beam
                 s1.velocity = LEFT
-                s2.velocity = RIGHT
-
                 push_new_beam(s1)
+
+                s2 = Beam.copy_from(beam)
+                s2.velocity = RIGHT
                 push_new_beam(s2)
 
         elif cur == '|':
             if beam.velocity == UP or beam.velocity == DOWN:
                 push_new_beam(beam)
             else:
-                s1 = Beam(position=[beam.position[0], beam.position[1]], velocity=[beam.velocity[0], beam.velocity[1]])
-                s2 = Beam(position=[beam.position[0], beam.position[1]], velocity=[beam.velocity[0], beam.velocity[1]])
-
+                s1 = beam
                 s1.velocity = UP
-                s2.velocity = DOWN
-
                 push_new_beam(s1)
+
+                s2 = Beam.copy_from(beam)
+                s2.velocity = DOWN
                 push_new_beam(s2)
 
         else:
             push_new_beam(beam)
 
     while beams:
-        for beam in beams:
-            process_beam(beam)
+        process_beam(beams.popleft())
 
-        beams = new_beams
-        new_beams = []
-
-    return len(set((h[0], h[1]) for h in history))
+    return len({(h[0], h[1]) for h in history})
 
 def part1():
     answer = energized_tiles([0, 0], RIGHT)
@@ -122,7 +112,7 @@ def part2():
         answer = max(answer, e)
 
         # Right row, heading left
-        e = energized_tiles([row, len(input) - 1], LEFT)
+        e = energized_tiles([row, len(input[0]) - 1], LEFT)
         answer = max(answer, e)
 
     # assert(answer == 8314)
