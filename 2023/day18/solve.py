@@ -15,13 +15,17 @@ def part2_dir_n(split_line):
 
     return dir, n
 
-def present(rowspans, r, c):
-    return r in rowspans and any(start <= c <= end for start, end in rowspans[r])
-
 def helper(get_dir_n):
     cur = (0, 0)
 
+    min_x = 0
+    max_x = 0
+    min_y = 0
+    max_y = 0
+
     rowspans = {}
+
+    up_cache = set()
 
     for line in input:
         dir, n = get_dir_n(line.split(' '))
@@ -43,6 +47,7 @@ def helper(get_dir_n):
                 else:
                     rowspans[x].append((cur[1], cur[1]))
             cur = (cur[0] + n, cur[1])
+            up_cache.add((cur[0] - 1, cur[1]))
         elif dir == 'U':
             for x in range(cur[0] - n + 1, cur[0]):
                 if x not in rowspans:
@@ -51,67 +56,46 @@ def helper(get_dir_n):
                     rowspans[x].append((cur[1], cur[1]))
             cur = (cur[0] - n, cur[1])
 
-    min_x = 0
-    max_x = 0
-    min_y = 0
-    max_y = 0
-
-    for r in rowspans:
-        min_y = min(min_y, r)
-        max_y = max(max_y, r)
-        for start, end in rowspans[r]:
-            min_x = min(min_x, start)
-            max_x = max(max_x, end)
+        min_x = min(min_x, cur[1])
+        max_x = max(max_x, cur[1])
+        min_y = min(min_y, cur[0])
+        max_y = max(max_y, cur[0])
     
-
-    print(min_y, min_x, max_y, max_x)
-    print(len(rowspans))
-
     n_inside = 0
-
-    # for row in range(0, max_y + 1):
-    #     inside = False
-    #     spans = rowspans[row]
-    #     spans.sort()
-    #     print(spans)
-
-    for row in range(0, max_y + 1):
+    
+    for row in range(min_y, max_y + 1):
         inside = False
-        col = 0
-        # srow = []
-        while col <= max_x:
-            if present(rowspans, row, col):
-                start_col = col
-                start_is_up = present(rowspans, row - 1, col)
+        spans = rowspans[row]
+        prev_span_end = None
+        spans.sort()
 
-                while present(rowspans, row, col):
-                    # srow.append('#')
-                    n_inside += 1
-                    col += 1
+        for begin, end in spans:
+            if inside and prev_span_end != None:
+                n_inside += begin - prev_span_end - 1
 
-                end_col = col
-                end_is_up = present(rowspans, row - 1, col - 1)
-
-                if start_col + 1 == end_col:
-                    inside = not inside
-                elif start_is_up != end_is_up:
-                    inside = not inside
+            if begin == end:
+                n_inside += 1
+                inside = not inside
             else:
-                col += 1
-                # srow.append('#' if inside else '.')
-                if inside:
-                    n_inside += 1
-        # print(''.join(srow))
+                n_inside += end - begin + 1
+                begin_is_up = (row - 1, begin) in up_cache
+                end_is_up = (row - 1, end) in up_cache
+                if begin_is_up != end_is_up:
+                    inside = not inside
+
+            prev_span_end = end
 
     return n_inside
 
 def part1():
     answer = helper(part1_dir_n)
+    # assert(answer == 47045)
     return answer
 
 def part2():
     answer = helper(part2_dir_n)
+    # assert(answer == 147839570293376)
     return answer
 
 print(f'part 1: {part1()}')
-# print(f'part 2: {part2()}')
+print(f'part 2: {part2()}')
