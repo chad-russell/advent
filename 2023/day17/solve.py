@@ -38,7 +38,7 @@ while frontier:
     (cur_cost, cur_pos) = heappop(frontier)
     row, col, drow, dcol, streak = cur_pos
     if (col, row) == END:
-        print(f'Total cost: {cur_cost}\n')
+        print(f'Total cost: {cur_cost}, key: {cur_pos}\n')
         break
     for next in neighbors(row, col, drow, dcol, streak):
         (nrow, ncol, ndrow, ndcol, nstreak) = next
