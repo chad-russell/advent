@@ -49,6 +49,7 @@ def helper(get_dir_n):
             cur = (cur[0] + n, cur[1])
             up_cache.add((cur[0] - 1, cur[1]))
         elif dir == 'U':
+            up_cache.add((cur[0] - 1, cur[1]))
             for x in range(cur[0] - n + 1, cur[0]):
                 if x not in rowspans:
                     rowspans[x] = [(cur[1], cur[1])]
@@ -65,9 +66,11 @@ def helper(get_dir_n):
     
     for row in range(min_y, max_y + 1):
         inside = False
+
         spans = rowspans[row]
-        prev_span_end = None
         spans.sort()
+
+        prev_span_end = None
 
         for begin, end in spans:
             if inside and prev_span_end != None:
