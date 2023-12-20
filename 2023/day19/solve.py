@@ -76,50 +76,8 @@ def narrow(r, op, n):
     assert(op == '>')
     return ((max(r[0], n + 1), r[1]), (r[0], min(r[1], n)))
 
-seen = []
+seen = set()
 ranges = []
-
-def visit(wfname, range_x, range_m, range_a, range_s):
-    global ranges
-
-    if wfname == 'A':
-        ranges.append((range_x, range_m, range_a, range_s))
-        return
-
-    if wfname == 'R':
-        return
-
-    if wfname in seen:
-        return
-
-    seen.append(wfname)
-
-    wf = workflows[wfname]
-    for rule in wf:
-        if len(rule) == 1:
-            visit(rule[0], range_x, range_m, range_a, range_s)
-        else:
-            assert(len(rule) == 4)
-
-            if rule[1] == 'x':
-                taken, not_taken = narrow(range_x, rule[0], rule[2])
-                visit(rule[-1], taken, range_m, range_a, range_s)
-                range_x = not_taken
-            elif rule[1] == 'm':
-                taken, not_taken = narrow(range_m, rule[0], rule[2])
-                visit(rule[-1], range_x, taken, range_a, range_s)
-                range_m = not_taken
-            elif rule[1] == 'a':
-                taken, not_taken = narrow(range_a, rule[0], rule[2])
-                visit(rule[-1], range_x, range_m, taken, range_s)
-                range_a = not_taken
-            else:
-                assert(rule[1] == 's')
-                taken, not_taken = narrow(range_s, rule[0], rule[2])
-                visit(rule[-1], range_x, range_m, range_a, taken)
-                range_s = not_taken
-
-    seen.pop()
 
 def mag(r):
     # Using len(range(...)) here automatically accounts
@@ -129,8 +87,39 @@ def mag(r):
 def range_combinations(r):
     return math.prod(map(mag, r))
 
+def visit(wfname, xmas):
+    global ranges
+
+    if wfname == 'A':
+        ranges.append(xmas)
+        return
+
+    if wfname == 'R':
+        return
+
+    if wfname in seen:
+        return
+
+    seen.add(wfname)
+
+    wf = workflows[wfname]
+    for rule in wf:
+        if len(rule) == 1:
+            visit(rule[0], xmas)
+        else:
+            assert(len(rule) == 4)
+
+            xi = 'xmas'.index(rule[1])
+            taken, not_taken = narrow(xmas[xi], rule[0], rule[2])
+
+            xmas[xi] = taken
+            visit(rule[-1], list(xmas))
+            xmas[xi] = not_taken
+
+    seen.discard(wfname)
+
 def part2():
-    visit('in', (1, 4000), (1, 4000), (1, 4000), (1, 4000))
+    visit('in', [(1, 4000)] * 4)
 
     answer = 0
 
