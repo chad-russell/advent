@@ -27,6 +27,7 @@
           devShells.default = pkgs.mkShell {
             buildInputs = with pkgs; [
               python311
+              nim2
             ];
 
             shellHook = ''

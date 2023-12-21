@@ -23,8 +23,7 @@ def part2():
         c2 = 0
         found_digit = False
 
-        for i in range(0, len(line)):
-            ch = line[i]
+        for i, ch in enumerate(line):
             digit = 0
             found = False
 
