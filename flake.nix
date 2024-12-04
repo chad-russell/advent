@@ -26,8 +26,7 @@
         in {
           devShells.default = pkgs.mkShell {
             buildInputs = with pkgs; [
-              python311
-              nim2
+              python3
             ];
 
             shellHook = ''
@@ -36,7 +35,7 @@
         	    python -m venv $VENV;
       		  fi
       		  source ./$VENV/bin/activate;
-		      export PYTHONPATH="$VENV/lib/python3.11/site-packages:."
+		      export PYTHONPATH="$VENV/lib/python3.12/site-packages:."
             '';
           };
         });
