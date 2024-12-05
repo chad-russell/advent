@@ -15,12 +15,9 @@ def part2():
     enabled = True
     answer = 0
     for do, dont, a, b in found:
-        if do:
-            enabled = True
-        elif dont:
-            enabled = False
-        elif a and b and enabled:
-            answer += int(a) * int(b)
+        if do: enabled = True
+        elif dont: enabled = False
+        elif a and b and enabled: answer += int(a) * int(b)
     return answer
 
 print(f'part 1: {part1()}') # 173529487

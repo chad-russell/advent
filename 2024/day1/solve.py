@@ -11,7 +11,5 @@ def part2():
         right[r] += 1
     return sum(l * (right.get(l) or 0) for l, _ in input)
 
-
-
 print(f'part 1: {part1()}') # 1590491
 print(f'part 2: {part2()}') # 22588371
