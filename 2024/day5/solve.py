@@ -7,7 +7,7 @@ already_correct = [u for u in updates if all(u.index(o[0]) < u.index(o[1]) for o
 def part1():
     return sum(u[len(u) // 2] for u in already_correct)
 
-def order_swap(u, i0, i1) -> bool:
+def order_swap(u, i0, i1):
     if i0 < i1: return False
     u[i0], u[i1] = u[i1], u[i0]
     return True
