@@ -9,13 +9,13 @@ def is_loop_common(guard_row, guard_col, rowi, coli, check=False):
     dx, dy = 0, -1
     visited = {(guard_row, guard_col, dx, dy) if check else (guard_row, guard_col)}
     while True:
-        x, y = guard_col + dx, guard_row + dy
-        if not (0 <= x < width and 0 <= y < height):
+        new_row, new_col = guard_row + dy, guard_col + dx
+        if not (0 <= new_col < width and 0 <= new_row < height):
             return [False, visited]
-        if (input[y][x] == '#') or (check and y == rowi and x == coli):
+        if (input[new_row][new_col] == '#') or (check and new_row == rowi and new_col == coli):
             dx, dy = -dy, dx
         else:
-            guard_row, guard_col = y, x
+            guard_row, guard_col = new_row, new_col
             if check and (guard_row, guard_col, dx, dy) in visited:
                 return [True, visited]
             visited.add((guard_row, guard_col, dx, dy) if check else (guard_row, guard_col))
